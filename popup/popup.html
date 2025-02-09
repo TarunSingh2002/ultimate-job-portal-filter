@@ -6,11 +6,36 @@
 <body>
   <div class="container">
     <h3>Job Title Keywords</h3>
-    <textarea id="titleKeywords" placeholder="Enter keywords separated by commas&#10;Example: intern,teacher"></textarea>
+    <textarea id="titleKeywords" placeholder="intern,teacher,data entry"></textarea>
     
     <h3>Company Names</h3>
-    <textarea id="companyNames" placeholder="Enter company names separated by commas&#10;Example: ABC pvt ltd,amazon"></textarea>
-    <div id="statusContainer"></div>
+    <textarea id="companyNames" placeholder="amazon,abc corp,xyz ltd"></textarea>
+    
+    <h3>Additional Filters</h3>
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="hideApplied">
+        <span class="slider"></span>
+      </label>
+      <span>Hide Applied Jobs</span>
+    </div>
+    
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="hidePromoted">
+        <span class="slider"></span>
+      </label>
+      <span>Hide Promoted Jobs</span>
+    </div>
+    
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="hideDismissed">
+        <span class="slider"></span>
+      </label>
+      <span>Hide Dismissed Jobs</span>
+    </div>
+
     <button id="saveButton">Save Filters</button>
   </div>
   <script src="popup.js"></script>

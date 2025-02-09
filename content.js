@@ -1,19 +1,19 @@
-let titleRegex;
-let companyRegex;
 let observer;
+let currentFilters = {};
 
-function updateFilters() {
-  chrome.storage.sync.get(['titleKeywords', 'companyNames'], (data) => {
-    // Handle empty title keywords
-    titleRegex = data.titleKeywords?.length > 0 
-      ? new RegExp(`\\b(${data.titleKeywords.join('|')})\\b`, 'i') 
-      : /(?!)/; // Never matches
-    
-    // Handle empty company names
-    companyRegex = data.companyNames?.length > 0
-      ? new RegExp(`\\b(${data.companyNames.join('|')})\\b`, 'i')
-      : /(?!)/; // Never matches
-    
+function initializeFilters() {
+  chrome.storage.sync.get(null, (data) => {
+    currentFilters = {
+      titleRegex: data.titleKeywords?.length > 0 
+        ? new RegExp(`\\b(${data.titleKeywords.join('|')})\\b`, 'i') 
+        : /(?!)/,
+      companyRegex: data.companyNames?.length > 0
+        ? new RegExp(`\\b(${data.companyNames.join('|')})\\b`, 'i')
+        : /(?!)/,
+      hideApplied: data.hideApplied || false,
+      hidePromoted: data.hidePromoted || false,
+      hideDismissed: data.hideDismissed || false
+    };
     filterJobs();
   });
 }
@@ -30,17 +30,27 @@ function filterJobs() {
     const title = titleElement.textContent.trim().toLowerCase();
     const company = companyElement.textContent.trim().toLowerCase();
     
-    const shouldHide = titleRegex?.test(title) || companyRegex?.test(company);
-    
-    if (shouldHide) {
-      card.style.display = 'none';
-    } else {
-      card.style.display = 'block';
+    let shouldHide = currentFilters.titleRegex.test(title) || 
+                    currentFilters.companyRegex.test(company);
+
+    if (!shouldHide && currentFilters.hideApplied) {
+      shouldHide = card.querySelector('.job-card-container__footer-job-state')?.textContent.includes('Applied');
     }
+
+    if (!shouldHide && currentFilters.hidePromoted) {
+      shouldHide = Array.from(card.querySelectorAll('.job-card-container__footer-item'))
+        .some(el => el.textContent.includes('Promoted'));
+    }
+
+    if (!shouldHide && currentFilters.hideDismissed) {
+      shouldHide = card.querySelector('.job-card-container__footer-item--highlighted')
+        ?.textContent.includes('We won’t show you this job again');
+    }
+
+    card.style.display = shouldHide ? 'none' : 'block';
   });
 }
 
-// Initialize observer to detect new job cards
 function initObserver() {
   observer = new MutationObserver(mutations => {
     mutations.forEach(mutation => {
@@ -56,11 +66,11 @@ function initObserver() {
   });
 }
 
-// Run initial setup
+// Initial setup
 if (document.querySelector('.scaffold-layout__list')) {
-  updateFilters();
+  initializeFilters();
   initObserver();
 }
 
-// Listen for filter updates
-chrome.storage.onChanged.addListener(updateFilters);
+// Listen for filter changes
+chrome.storage.onChanged.addListener(initializeFilters);
