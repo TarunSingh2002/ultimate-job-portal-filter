@@ -10,7 +10,8 @@
   "content_scripts": [
     {
       "matches": ["https://www.linkedin.com/jobs/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ]
 }

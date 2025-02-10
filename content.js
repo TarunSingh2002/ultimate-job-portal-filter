@@ -1,76 +1,136 @@
 let observer;
 let currentFilters = {};
 
+function escapeRegExp(string) {
+  try {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  } catch (error) {
+    console.error("Error escaping regex: ", error);
+    return string;
+  }
+}
+
+function checkPageAndInit() {
+  try {
+    if (window.location.href.includes('/jobs/search/')) {
+      initializeFilters();
+    }
+  } catch (error) {
+    console.error("Error in checkPageAndInit: ", error);
+  }
+}
+
+window.addEventListener('hashchange', checkPageAndInit);
+window.addEventListener('popstate', checkPageAndInit);
+
+checkPageAndInit();
+
 function initializeFilters() {
-  chrome.storage.sync.get(null, (data) => {
-    currentFilters = {
-      titleRegex: data.titleKeywords?.length > 0 
-        ? new RegExp(`\\b(${data.titleKeywords.join('|')})\\b`, 'i') 
-        : /(?!)/,
-      companyRegex: data.companyNames?.length > 0
-        ? new RegExp(`\\b(${data.companyNames.join('|')})\\b`, 'i')
-        : /(?!)/,
-      hideApplied: data.hideApplied || false,
-      hidePromoted: data.hidePromoted || false,
-      hideDismissed: data.hideDismissed || false
-    };
-    filterJobs();
-  });
+  try {
+    if (observer) {
+      observer.disconnect();
+    }
+    chrome.storage.sync.get(null, (data) => {
+      try {
+        const escapedTitles = data.titleKeywords?.map(escapeRegExp) || [];
+        const escapedCompanies = data.companyNames?.map(escapeRegExp) || [];
+
+        currentFilters = {
+          titleRegex: escapedTitles.length 
+            ? new RegExp(`\\b(${escapedTitles.join('|')})\\b`, 'i') 
+            : /(?!)/,
+          companyRegex: escapedCompanies.length
+            ? new RegExp(`\\b(${escapedCompanies.join('|')})\\b`, 'i')
+            : /(?!)/,
+          hideApplied: data.hideApplied || false,
+          hidePromoted: data.hidePromoted || false,
+          hideDismissed: data.hideDismissed || false
+        };
+        filterJobs();
+        initObserver();
+      } catch (error) {
+        console.error("Error processing storage data: ", error);
+      }
+    });
+  } catch (error) {
+    console.error("Error in initializeFilters: ", error);
+  }
 }
 
 function filterJobs() {
-  const jobCards = document.querySelectorAll('.scaffold-layout__list-item');
-  
-  jobCards.forEach(card => {
-    const titleElement = card.querySelector('.job-card-list__title--link');
-    const companyElement = card.querySelector('.artdeco-entity-lockup__subtitle span');
+  try {
+    const jobCards = document.querySelectorAll('.scaffold-layout__list-item');
     
-    if (!titleElement || !companyElement) return;
+    jobCards.forEach(card => {
+      try {
+        const titleElement = card.querySelector('.job-card-list__title--link');
+        const companyElement = card.querySelector('.artdeco-entity-lockup__subtitle span');
+        
+        if (!titleElement || !companyElement) return;
 
-    const title = titleElement.textContent.trim().toLowerCase();
-    const company = companyElement.textContent.trim().toLowerCase();
-    
-    let shouldHide = currentFilters.titleRegex.test(title) || 
-                    currentFilters.companyRegex.test(company);
+        const title = titleElement.textContent.trim().toLowerCase();
+        const company = companyElement.textContent.trim().toLowerCase();
+        
+        let shouldHide = currentFilters.titleRegex.test(title) || 
+                        currentFilters.companyRegex.test(company);
 
-    if (!shouldHide && currentFilters.hideApplied) {
-      shouldHide = card.querySelector('.job-card-container__footer-job-state')?.textContent.includes('Applied');
-    }
+        if (!shouldHide && currentFilters.hideApplied) {
+          shouldHide = card.querySelector('.job-card-container__footer-job-state')?.textContent.includes('Applied');
+        }
 
-    if (!shouldHide && currentFilters.hidePromoted) {
-      shouldHide = Array.from(card.querySelectorAll('.job-card-container__footer-item'))
-        .some(el => el.textContent.includes('Promoted'));
-    }
+        if (!shouldHide && currentFilters.hidePromoted) {
+          shouldHide = Array.from(card.querySelectorAll('.job-card-container__footer-item'))
+            .some(el => el.textContent.includes('Promoted'));
+        }
 
-    if (!shouldHide && currentFilters.hideDismissed) {
-      shouldHide = card.querySelector('.job-card-container__footer-item--highlighted')
-        ?.textContent.includes('We won’t show you this job again');
-    }
+        if (!shouldHide && currentFilters.hideDismissed) {
+          shouldHide = card.querySelector('.job-card-container__footer-item--highlighted')
+            ?.textContent.includes('We won’t show you this job again');
+        }
 
-    card.style.display = shouldHide ? 'none' : 'block';
-  });
+        card.style.display = shouldHide ? 'none' : 'block';
+      } catch (error) {
+        console.error("Error processing job card: ", error);
+      }
+    });
+  } catch (error) {
+    console.error("Error in filterJobs: ", error);
+  }
 }
 
 function initObserver() {
-  observer = new MutationObserver(mutations => {
-    mutations.forEach(mutation => {
-      if (mutation.addedNodes.length) {
+  try {
+    const targetNode = document.querySelector('.scaffold-layout__list');
+    if (!targetNode) {
+      setTimeout(initObserver, 500);
+      return;
+    }
+
+    observer = new MutationObserver(() => {
+      try {
         filterJobs();
+      } catch (error) {
+        console.error("Error in MutationObserver: ", error);
       }
     });
-  });
-
-  observer.observe(document.querySelector('.scaffold-layout__list'), {
-    childList: true,
-    subtree: true
-  });
+    observer.observe(targetNode, {
+      childList: true,
+      subtree: true
+    });
+  } catch (error) {
+    console.error("Error in initObserver: ", error);
+  }
 }
 
-// Initial setup
 if (document.querySelector('.scaffold-layout__list')) {
   initializeFilters();
   initObserver();
 }
 
-// Listen for filter changes
-chrome.storage.onChanged.addListener(initializeFilters);
+chrome.storage.onChanged.addListener(() => {
+  try {
+    initializeFilters();
+  } catch (error) {
+    console.error("Error handling storage change: ", error);
+  }
+});
