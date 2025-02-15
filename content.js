@@ -27,31 +27,34 @@ checkPageAndInit();
 
 function initializeFilters() {
   try {
-    if (observer) {
-      observer.disconnect();
-    }
-    chrome.storage.sync.get(null, (data) => {
-      try {
-        const escapedTitles = data.titleKeywords?.map(escapeRegExp) || [];
-        const escapedCompanies = data.companyNames?.map(escapeRegExp) || [];
+    if (observer) observer.disconnect();
+    chrome.storage.sync.get(
+      ['whitelistKeywords', 'titleKeywords', 'companyNames', 'hideApplied', 'hidePromoted', 'hideDismissed'], 
+      (data) => {
+        try {
+          // Process keywords
+          const whitelist = data.whitelistKeywords?.map(normalizeString) || [];
+          const blacklist = data.titleKeywords?.map(normalizeString) || [];
+          const escapedCompanies = data.companyNames?.map(escapeRegExp) || [];
 
-        currentFilters = {
-          titleRegex: escapedTitles.length 
-            ? new RegExp(`\\b(${escapedTitles.join('|')})\\b`, 'i') 
-            : /(?!)/,
-          companyRegex: escapedCompanies.length
-            ? new RegExp(`\\b(${escapedCompanies.join('|')})\\b`, 'i')
-            : /(?!)/,
-          hideApplied: data.hideApplied || false,
-          hidePromoted: data.hidePromoted || false,
-          hideDismissed: data.hideDismissed || false
-        };
-        filterJobs();
-        initObserver();
-      } catch (error) {
-        console.error("Error processing storage data: ", error);
+          currentFilters = {
+            whitelist,
+            blacklist,
+            companyRegex: escapedCompanies.length 
+              ? new RegExp(`\\b(${escapedCompanies.join('|')})\\b`, 'i') 
+              : /(?!)/,
+            hideApplied: data.hideApplied || false,
+            hidePromoted: data.hidePromoted || false,
+            hideDismissed: data.hideDismissed || false
+          };
+          
+          filterJobs();
+          initObserver();
+        } catch (error) {
+          console.error("Error processing storage data: ", error);
+        }
       }
-    });
+    );
   } catch (error) {
     console.error("Error in initializeFilters: ", error);
   }
@@ -68,12 +71,32 @@ function filterJobs() {
         
         if (!titleElement || !companyElement) return;
 
-        const title = titleElement.textContent.trim().toLowerCase();
-        const company = companyElement.textContent.trim().toLowerCase();
+        const title = titleElement.textContent.trim();
+        const company = companyElement.textContent.trim();
+        const normalizedTitle = normalizeString(title);
         
-        let shouldHide = currentFilters.titleRegex.test(title) || 
-                        currentFilters.companyRegex.test(company);
+        let shouldHide = false;
 
+        // 1. Company Filter
+        shouldHide = currentFilters.companyRegex.test(company);
+
+        // 2. Whitelist Filter
+        if (!shouldHide && currentFilters.whitelist.length > 0) {
+          const hasWhitelist = currentFilters.whitelist.some(kw => 
+            normalizedTitle.includes(kw)
+          );
+          if (!hasWhitelist) shouldHide = true;
+        }
+
+        // 3. Blacklist Filter
+        if (!shouldHide) {
+          const hasBlacklist = currentFilters.blacklist.some(kw => 
+            normalizedTitle.includes(kw)
+          );
+          if (hasBlacklist) shouldHide = true;
+        }
+
+        // Existing filters (Applied, Promoted, Dismissed)
         if (!shouldHide && currentFilters.hideApplied) {
           shouldHide = card.querySelector('.job-card-container__footer-job-state')?.textContent.includes('Applied');
         }
@@ -134,3 +157,7 @@ chrome.storage.onChanged.addListener(() => {
     console.error("Error handling storage change: ", error);
   }
 });
+
+function normalizeString(str) {
+  return str.replace(/[^a-z0-9]/gi, '').toLowerCase();
+}

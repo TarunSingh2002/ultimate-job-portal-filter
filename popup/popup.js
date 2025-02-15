@@ -1,12 +1,16 @@
 document.getElementById('saveButton').addEventListener('click', () => {
+
+  const whitelistKeywords = document.getElementById('whitelistKeywords').value
+    .split(',')
+    .map(k => k.trim())
+    .filter(k => k);
+
   const titleKeywords = document.getElementById('titleKeywords').value
-    .toLowerCase()
     .split(',')
     .map(k => k.trim())
     .filter(k => k);
 
   const companyNames = document.getElementById('companyNames').value
-    .toLowerCase()
     .split(',')
     .map(c => c.trim())
     .filter(c => c);
@@ -16,6 +20,7 @@ document.getElementById('saveButton').addEventListener('click', () => {
   const hideDismissed = document.getElementById('hideDismissed').checked;
 
   chrome.storage.sync.set({ 
+    whitelistKeywords,
     titleKeywords, 
     companyNames,
     hideApplied,
@@ -31,8 +36,9 @@ document.getElementById('saveButton').addEventListener('click', () => {
 });
 
 chrome.storage.sync.get(
-  ['titleKeywords', 'companyNames', 'hideApplied', 'hidePromoted', 'hideDismissed'], 
+  ['whitelistKeywords', 'titleKeywords', 'companyNames', 'hideApplied', 'hidePromoted', 'hideDismissed'], 
   (data) => {
+    document.getElementById('whitelistKeywords').value = data.whitelistKeywords?.join(',') || '';
     document.getElementById('titleKeywords').value = data.titleKeywords?.join(',') || '';
     document.getElementById('companyNames').value = data.companyNames?.join(',') || '';
     document.getElementById('hideApplied').checked = data.hideApplied || false;
