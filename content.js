@@ -1,5 +1,14 @@
-let observer;
+let observer; 
 let currentFilters = {};
+
+// New normalization function that preserves spaces for matching.
+function normalizeForMatching(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 function escapeRegExp(string) {
   try {
@@ -32,9 +41,9 @@ function initializeFilters() {
       ['whitelistKeywords', 'titleKeywords', 'companyNames', 'hideApplied', 'hidePromoted', 'hideDismissed'], 
       (data) => {
         try {
-          // Process keywords
-          const whitelist = data.whitelistKeywords?.map(normalizeString) || [];
-          const blacklist = data.titleKeywords?.map(normalizeString) || [];
+          // Use the raw keywords (without compressing them) so our matching functions can work properly.
+          const whitelist = data.whitelistKeywords || [];
+          const blacklist = data.titleKeywords || [];
           const escapedCompanies = data.companyNames?.map(escapeRegExp) || [];
 
           currentFilters = {
@@ -60,6 +69,49 @@ function initializeFilters() {
   }
 }
 
+/**
+ * Whitelist matching (loose matching):
+ * Checks that every word in the keyword appears in the normalized title.
+ * For multi-word keywords, also checks a compressed version (i.e. without spaces).
+ */
+function keywordMatchesWhitelist(keyword, normalizedTitle) {
+  const normalizedKeyword = normalizeForMatching(keyword);
+  const titleWords = normalizedTitle.split(' ');
+  const keywordWords = normalizedKeyword.split(' ');
+  const exactMatch = keywordWords.every(word => titleWords.includes(word));
+  
+  if (keywordWords.length > 1) {
+    const compressedKeyword = keywordWords.join('');
+    const compressedTitle = normalizedTitle.replace(/\s/g, '');
+    return exactMatch || compressedTitle.includes(compressedKeyword);
+  }
+  return exactMatch;
+}
+
+/**
+ * Blacklist matching (exact phrase matching for multi-word keywords):
+ * For multi-word keywords, uses a regex with word boundaries to ensure that the entire phrase
+ * is present, or checks a compressed version.
+ * For single-word keywords, performs a whole-word check.
+ */
+function keywordMatchesBlacklist(keyword, normalizedTitle) {
+  const normalizedKeyword = normalizeForMatching(keyword);
+  const keywordWords = normalizedKeyword.split(' ');
+  const titleWords = normalizedTitle.split(' ');
+  const compressedTitle = normalizedTitle.replace(/\s/g, '');
+  
+  if (keywordWords.length > 1) {
+    const regex = new RegExp(`\\b${normalizedKeyword.replace(/\s+/g, '\\s+')}\\b`);
+    if (regex.test(normalizedTitle)) {
+      return true;
+    }
+    const compressedKeyword = keywordWords.join('');
+    return compressedTitle.includes(compressedKeyword);
+  } else {
+    return titleWords.includes(normalizedKeyword);
+  }
+}
+
 function filterJobs() {
   try {
     const jobCards = document.querySelectorAll('.scaffold-layout__list-item');
@@ -73,25 +125,25 @@ function filterJobs() {
 
         const title = titleElement.textContent.trim();
         const company = companyElement.textContent.trim();
-        const normalizedTitle = normalizeString(title);
+        const normalizedTitle = normalizeForMatching(title);
         
         let shouldHide = false;
 
         // 1. Company Filter
         shouldHide = currentFilters.companyRegex.test(company);
 
-        // 2. Whitelist Filter
+        // 2. Whitelist Filter (loose matching)
         if (!shouldHide && currentFilters.whitelist.length > 0) {
           const hasWhitelist = currentFilters.whitelist.some(kw => 
-            normalizedTitle.includes(kw)
+            keywordMatchesWhitelist(kw, normalizedTitle)
           );
           if (!hasWhitelist) shouldHide = true;
         }
 
-        // 3. Blacklist Filter
+        // 3. Blacklist Filter (exact phrase matching for multi-word keywords)
         if (!shouldHide) {
           const hasBlacklist = currentFilters.blacklist.some(kw => 
-            normalizedTitle.includes(kw)
+            keywordMatchesBlacklist(kw, normalizedTitle)
           );
           if (hasBlacklist) shouldHide = true;
         }
@@ -159,5 +211,6 @@ chrome.storage.onChanged.addListener(() => {
 });
 
 function normalizeString(str) {
+  // This legacy function is still used for company names.
   return str.replace(/[^a-z0-9]/gi, '').toLowerCase();
 }
