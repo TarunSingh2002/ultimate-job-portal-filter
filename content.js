@@ -44,14 +44,13 @@ function initializeFilters() {
           // Use the raw keywords (without compressing them) so our matching functions can work properly.
           const whitelist = data.whitelistKeywords || [];
           const blacklist = data.titleKeywords || [];
-          const escapedCompanies = data.companyNames?.map(escapeRegExp) || [];
+          // Store company names as lowercase trimmed strings for exact matching
+          const companies = (data.companyNames || []).map(c => c.trim().toLowerCase());
 
           currentFilters = {
             whitelist,
             blacklist,
-            companyRegex: escapedCompanies.length 
-              ? new RegExp(`\\b(${escapedCompanies.join('|')})\\b`, 'i') 
-              : /(?!)/,
+            companies,
             hideApplied: data.hideApplied || false,
             hidePromoted: data.hidePromoted || false,
             hideDismissed: data.hideDismissed || false
@@ -129,8 +128,8 @@ function filterJobs() {
         
         let shouldHide = false;
 
-        // 1. Company Filter
-        shouldHide = currentFilters.companyRegex.test(company);
+        // 1. Company Filter — exact match, case-insensitive
+        shouldHide = currentFilters.companies.includes(company.trim().toLowerCase());
 
         // 2. Whitelist Filter (loose matching)
         if (!shouldHide && currentFilters.whitelist.length > 0) {
