@@ -87,3 +87,27 @@ chrome.storage.sync.get(
     document.getElementById('naukri_hidePromoted').checked       = data.naukri_hidePromoted || false;
   }
 );
+
+// ── Indeed Save ───────────────────────────────────────────────
+
+document.getElementById('saveIndeed').addEventListener('click', () => {
+  const indeed_blacklistedKeywords  = parseTextarea('indeed_blacklistedKeywords');
+  const indeed_blacklistedCompanies = parseTextarea('indeed_blacklistedCompanies');
+  const indeed_hideSaved            = document.getElementById('indeed_hideSaved').checked;
+
+  chrome.storage.sync.set({
+    indeed_blacklistedKeywords,
+    indeed_blacklistedCompanies,
+    indeed_hideSaved
+  }, showSavedTick);
+});
+
+// Indeed load on popup open
+chrome.storage.sync.get(
+  ['indeed_blacklistedKeywords', 'indeed_blacklistedCompanies', 'indeed_hideSaved'],
+  (data) => {
+    document.getElementById('indeed_blacklistedKeywords').value  = data.indeed_blacklistedKeywords?.join(', ')  || '';
+    document.getElementById('indeed_blacklistedCompanies').value = data.indeed_blacklistedCompanies?.join(', ') || '';
+    document.getElementById('indeed_hideSaved').checked          = data.indeed_hideSaved || false;
+  }
+);

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Job Filter (LinkedIn + Naukri)",
-  "version": "2.0",
-  "description": "Advanced job filtering for LinkedIn and Naukri.com",
+  "name": "Job Filter (LinkedIn + Naukri + Indeed)",
+  "version": "2.1",
+  "description": "Advanced job filtering for LinkedIn, Naukri.com, and Indeed.com",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup/popup.html"
@@ -16,6 +16,11 @@
     {
       "matches": ["https://www.naukri.com/*"],
       "js": ["naukri-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://in.indeed.com/*", "https://www.indeed.com/*"],
+      "js": ["indeed-content.js"],
       "run_at": "document_idle"
     }
   ]
