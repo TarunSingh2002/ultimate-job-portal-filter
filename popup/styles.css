@@ -1,5 +1,5 @@
 body {
-  width: 320px;
+  width: 340px;
   padding: 15px;
   font-family: Arial, sans-serif;
   background-color: #f3f6f8;
@@ -9,28 +9,77 @@ body {
 
 .container {
   background-color: white;
-  padding: 20px;
+  padding: 16px 20px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* ── Tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 8px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: #f0f4f8;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 7px 10px;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+  margin-top: 0;
+  width: auto;
+}
+
+.tab-btn.active {
+  background-color: #0a66c2;
+  color: white;
+  border-color: #0a66c2;
+}
+
+.tab-btn:hover:not(.active) {
+  background-color: #dce6f0;
+}
+
+.tab-content {
+  display: block;
+}
+
+.tab-content.hidden {
+  display: none;
+}
+
+/* ── Form Elements ── */
 h3 {
   color: #0a66c2;
-  margin: 15px 0 10px 0;
-  font-size: 15px;
+  margin: 14px 0 8px 0;
+  font-size: 14px;
   font-weight: 600;
 }
 
 textarea {
   width: 100%;
-  height: 80px;
+  height: 70px;
   padding: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: vertical;
-  font-size: 13px;
+  font-size: 12px;
   box-sizing: border-box;
+  color: #333;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #0a66c2;
 }
 
 button {
@@ -43,14 +92,19 @@ button {
   font-size: 14px;
   font-weight: 600;
   width: 100%;
-  margin-top: 15px;
+  margin-top: 14px;
   transition: background-color 0.2s;
 }
 
+button:hover {
+  background-color: #004fa3;
+}
+
+/* ── Toggle Switch ── */
 .toggle-container {
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  margin: 9px 0;
   gap: 10px;
 }
 
@@ -59,6 +113,7 @@ button {
   display: inline-block;
   width: 40px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .switch input {
@@ -70,10 +125,7 @@ button {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: #ccc;
   transition: .4s;
   border-radius: 34px;
@@ -99,6 +151,7 @@ input:checked + .slider:before {
   transform: translateX(16px);
 }
 
+/* ── Save Tick Animation ── */
 .save-status {
   position: fixed;
   top: 10px;
@@ -110,8 +163,8 @@ input:checked + .slider:before {
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-10px); }
-  20% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; transform: translateY(0); }
+  0%   { opacity: 0; transform: translateY(-10px); }
+  20%  { opacity: 1; transform: translateY(0); }
+  80%  { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-10px); }
 }

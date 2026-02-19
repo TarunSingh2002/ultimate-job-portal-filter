@@ -5,41 +5,80 @@
 </head>
 <body>
   <div class="container">
-    <h3>Required Title Keywords (Whitelist)</h3>
-    <textarea id="whitelistKeywords" placeholder="Machine Learning,SQL,AWS"></textarea>
 
-    <h3>Blocked Title Keywords (Blacklist)</h3>
-    <textarea id="titleKeywords" placeholder="intern,teacher,data entry"></textarea>
-    
-    <h3>Company Names</h3>
-    <textarea id="companyNames" placeholder="amazon,abc corp,xyz ltd"></textarea>
-    
-    <h3>Additional Filters</h3>
-    <div class="toggle-container">
-      <label class="switch">
-        <input type="checkbox" id="hideApplied">
-        <span class="slider"></span>
-      </label>
-      <span>Hide Applied Jobs</span>
-    </div>
-    
-    <div class="toggle-container">
-      <label class="switch">
-        <input type="checkbox" id="hidePromoted">
-        <span class="slider"></span>
-      </label>
-      <span>Hide Promoted Jobs</span>
-    </div>
-    
-    <div class="toggle-container">
-      <label class="switch">
-        <input type="checkbox" id="hideDismissed">
-        <span class="slider"></span>
-      </label>
-      <span>Hide Dismissed Jobs</span>
+    <!-- Tab Buttons -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="linkedin">💼 LinkedIn</button>
+      <button class="tab-btn" data-tab="naukri">🔍 Naukri</button>
     </div>
 
-    <button id="saveButton">Save Filters</button>
+    <!-- ─── LinkedIn Tab ─── -->
+    <div class="tab-content" id="tab-linkedin">
+      <h3>Required Title Keywords (Whitelist)</h3>
+      <textarea id="whitelistKeywords" placeholder="Machine Learning,SQL,AWS"></textarea>
+
+      <h3>Blocked Title Keywords (Blacklist)</h3>
+      <textarea id="titleKeywords" placeholder="intern,teacher,data entry"></textarea>
+
+      <h3>Blocked Company Names</h3>
+      <textarea id="companyNames" placeholder="amazon,abc corp,xyz ltd"></textarea>
+
+      <h3>Additional Filters</h3>
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="hideApplied">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Applied Jobs</span>
+      </div>
+
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="hidePromoted">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Promoted Jobs</span>
+      </div>
+
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="hideDismissed">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Dismissed Jobs</span>
+      </div>
+
+      <button id="saveLinkedIn">Save LinkedIn Filters</button>
+    </div>
+
+    <!-- ─── Naukri Tab ─── -->
+    <div class="tab-content hidden" id="tab-naukri">
+      <h3>Blocked Title Keywords</h3>
+      <textarea id="naukri_blacklistedKeywords" placeholder="manager,senior,lead,testing"></textarea>
+
+      <h3>Blocked Company Names</h3>
+      <textarea id="naukri_blacklistedCompanies" placeholder="soul ai,multicareers,xyz ltd"></textarea>
+
+      <h3>Additional Filters</h3>
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="naukri_hideSaved">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Saved Jobs</span>
+      </div>
+
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="naukri_hidePromoted">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Promoted / Ad Cards</span>
+      </div>
+
+      <button id="saveNaukri">Save Naukri Filters</button>
+    </div>
+
   </div>
   <script src="popup.js"></script>
 </body>
