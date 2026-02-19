@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Job Filter (LinkedIn + Naukri + Indeed)",
-  "version": "2.1",
-  "description": "Advanced job filtering for LinkedIn, Naukri.com, and Indeed.com",
+  "name": "Job Filter (LinkedIn + Naukri + Indeed + Glassdoor)",
+  "version": "2.3",
+  "description": "Advanced job filtering for LinkedIn, Naukri.com, Indeed.com, and Glassdoor",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup/popup.html"
@@ -21,6 +21,11 @@
     {
       "matches": ["https://in.indeed.com/*", "https://www.indeed.com/*"],
       "js": ["indeed-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.glassdoor.com/*", "https://www.glassdoor.co.in/*"],
+      "js": ["glassdoor-content.js"],
       "run_at": "document_idle"
     }
   ]

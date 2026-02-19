@@ -111,3 +111,27 @@ chrome.storage.sync.get(
     document.getElementById('indeed_hideSaved').checked          = data.indeed_hideSaved || false;
   }
 );
+
+// ── Glassdoor Save ────────────────────────────────────────────
+
+document.getElementById('saveGlassdoor').addEventListener('click', () => {
+  const glassdoor_blacklistedKeywords  = parseTextarea('glassdoor_blacklistedKeywords');
+  const glassdoor_blacklistedCompanies = parseTextarea('glassdoor_blacklistedCompanies');
+  const glassdoor_hideSaved            = document.getElementById('glassdoor_hideSaved').checked;
+
+  chrome.storage.sync.set({
+    glassdoor_blacklistedKeywords,
+    glassdoor_blacklistedCompanies,
+    glassdoor_hideSaved
+  }, showSavedTick);
+});
+
+// Glassdoor load on popup open
+chrome.storage.sync.get(
+  ['glassdoor_blacklistedKeywords', 'glassdoor_blacklistedCompanies', 'glassdoor_hideSaved'],
+  (data) => {
+    document.getElementById('glassdoor_blacklistedKeywords').value  = data.glassdoor_blacklistedKeywords?.join(', ')  || '';
+    document.getElementById('glassdoor_blacklistedCompanies').value = data.glassdoor_blacklistedCompanies?.join(', ') || '';
+    document.getElementById('glassdoor_hideSaved').checked          = data.glassdoor_hideSaved || false;
+  }
+);

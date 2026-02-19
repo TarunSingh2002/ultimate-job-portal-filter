@@ -11,6 +11,7 @@
       <button class="tab-btn active" data-tab="linkedin">LinkedIn</button>
       <button class="tab-btn" data-tab="naukri">Naukri</button>
       <button class="tab-btn" data-tab="indeed">Indeed</button>
+      <button class="tab-btn" data-tab="glassdoor">Glassdoor</button>
     </div>
 
     <!-- ─── LinkedIn Tab ─── -->
@@ -98,6 +99,27 @@
       </div>
 
       <button id="saveIndeed">Save Indeed Filters</button>
+    </div>
+
+
+    <!-- ─── Glassdoor Tab ─── -->
+    <div class="tab-content hidden" id="tab-glassdoor">
+      <h3>Blocked Title Keywords</h3>
+      <textarea id="glassdoor_blacklistedKeywords" placeholder="intern,manager,data entry"></textarea>
+
+      <h3>Blocked Company Names</h3>
+      <textarea id="glassdoor_blacklistedCompanies" placeholder="inmobi,ltm,xyz ltd"></textarea>
+
+      <h3>Additional Filters</h3>
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="glassdoor_hideSaved">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Saved Jobs</span>
+      </div>
+
+      <button id="saveGlassdoor">Save Glassdoor Filters</button>
     </div>
 
   </div>
