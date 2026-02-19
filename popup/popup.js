@@ -126,12 +126,34 @@ document.getElementById('saveGlassdoor').addEventListener('click', () => {
   }, showSavedTick);
 });
 
-// Glassdoor load on popup open
 chrome.storage.sync.get(
   ['glassdoor_blacklistedKeywords', 'glassdoor_blacklistedCompanies', 'glassdoor_hideSaved'],
   (data) => {
     document.getElementById('glassdoor_blacklistedKeywords').value  = data.glassdoor_blacklistedKeywords?.join(', ')  || '';
     document.getElementById('glassdoor_blacklistedCompanies').value = data.glassdoor_blacklistedCompanies?.join(', ') || '';
     document.getElementById('glassdoor_hideSaved').checked          = data.glassdoor_hideSaved || false;
+  }
+);
+
+// ── Foundit Save ──────────────────────────────────────────────
+
+document.getElementById('saveFoundit').addEventListener('click', () => {
+  const foundit_blacklistedKeywords  = parseTextarea('foundit_blacklistedKeywords');
+  const foundit_blacklistedCompanies = parseTextarea('foundit_blacklistedCompanies');
+  const foundit_hideSaved            = document.getElementById('foundit_hideSaved').checked;
+
+  chrome.storage.sync.set({
+    foundit_blacklistedKeywords,
+    foundit_blacklistedCompanies,
+    foundit_hideSaved
+  }, showSavedTick);
+});
+
+chrome.storage.sync.get(
+  ['foundit_blacklistedKeywords', 'foundit_blacklistedCompanies', 'foundit_hideSaved'],
+  (data) => {
+    document.getElementById('foundit_blacklistedKeywords').value  = data.foundit_blacklistedKeywords?.join(', ')  || '';
+    document.getElementById('foundit_blacklistedCompanies').value = data.foundit_blacklistedCompanies?.join(', ') || '';
+    document.getElementById('foundit_hideSaved').checked          = data.foundit_hideSaved || false;
   }
 );

@@ -1,6 +1,7 @@
+/* ── Base ── */
 body {
-  width: 340px;
-  padding: 15px;
+  width: 360px;
+  padding: 12px;
   font-family: Arial, sans-serif;
   background-color: #f3f6f8;
   margin: 0;
@@ -9,33 +10,35 @@ body {
 
 .container {
   background-color: white;
-  padding: 16px 20px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 14px 16px 18px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
 
-/* ── Tabs ── */
+/* ── Tab Bar — wraps into 2 rows for 5 platforms ── */
 .tab-bar {
   display: flex;
-  gap: 6px;
-  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 8px;
 }
 
 .tab-btn {
-  flex: 1;
+  flex: 1 1 calc(33% - 5px);
+  min-width: 72px;
   background: #f0f4f8;
-  color: #444;
+  color: #555;
   border: 1px solid #ccc;
-  padding: 7px 10px;
-  border-radius: 6px 6px 0 0;
+  padding: 6px 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
+  text-align: center;
   transition: background-color 0.2s, color 0.2s;
-  margin-top: 0;
-  width: auto;
+  white-space: nowrap;
 }
 
 .tab-btn.active {
@@ -48,27 +51,33 @@ body {
   background-color: #dce6f0;
 }
 
+/* ── Tab Content — scrollable so nothing gets clipped ── */
 .tab-content {
   display: block;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
-.tab-content.hidden {
-  display: none;
-}
+.tab-content::-webkit-scrollbar { width: 4px; }
+.tab-content::-webkit-scrollbar-track { background: transparent; }
+.tab-content::-webkit-scrollbar-thumb { background: #c0cdd8; border-radius: 4px; }
+
+.tab-content.hidden { display: none; }
 
 /* ── Form Elements ── */
 h3 {
   color: #0a66c2;
-  margin: 14px 0 8px 0;
-  font-size: 14px;
+  margin: 12px 0 6px 0;
+  font-size: 13px;
   font-weight: 600;
 }
 
 textarea {
   width: 100%;
-  height: 70px;
-  padding: 8px;
-  margin-bottom: 6px;
+  height: 62px;
+  padding: 7px;
+  margin-bottom: 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: vertical;
@@ -80,76 +89,66 @@ textarea {
 textarea:focus {
   outline: none;
   border-color: #0a66c2;
+  box-shadow: 0 0 0 2px rgba(10,102,194,0.15);
 }
 
 button {
   background-color: #0a66c2;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 9px 20px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   width: 100%;
-  margin-top: 14px;
+  margin-top: 12px;
   transition: background-color 0.2s;
 }
 
-button:hover {
-  background-color: #004fa3;
-}
+button:hover { background-color: #004fa3; }
 
 /* ── Toggle Switch ── */
 .toggle-container {
   display: flex;
   align-items: center;
-  margin: 9px 0;
+  margin: 8px 0;
   gap: 10px;
 }
 
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 24px;
+  width: 38px;
+  height: 22px;
   flex-shrink: 0;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+.switch input { opacity: 0; width: 0; height: 0; }
 
 .slider {
   position: absolute;
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: #ccc;
-  transition: .4s;
+  transition: .35s;
   border-radius: 34px;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: .4s;
+  transition: .35s;
   border-radius: 50%;
 }
 
-input:checked + .slider {
-  background-color: #0a66c2;
-}
-
-input:checked + .slider:before {
-  transform: translateX(16px);
-}
+input:checked + .slider { background-color: #0a66c2; }
+input:checked + .slider:before { transform: translateX(16px); }
 
 /* ── Save Tick Animation ── */
 .save-status {
@@ -157,14 +156,14 @@ input:checked + .slider:before {
   top: 10px;
   right: 10px;
   color: #00c853;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   animation: fadeInOut 1.5s ease-in-out;
 }
 
 @keyframes fadeInOut {
-  0%   { opacity: 0; transform: translateY(-10px); }
+  0%   { opacity: 0; transform: translateY(-8px); }
   20%  { opacity: 1; transform: translateY(0); }
   80%  { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 0; transform: translateY(-8px); }
 }

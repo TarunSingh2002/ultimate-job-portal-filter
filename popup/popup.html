@@ -12,6 +12,7 @@
       <button class="tab-btn" data-tab="naukri">Naukri</button>
       <button class="tab-btn" data-tab="indeed">Indeed</button>
       <button class="tab-btn" data-tab="glassdoor">Glassdoor</button>
+      <button class="tab-btn" data-tab="foundit">Foundit</button>
     </div>
 
     <!-- ─── LinkedIn Tab ─── -->
@@ -120,6 +121,26 @@
       </div>
 
       <button id="saveGlassdoor">Save Glassdoor Filters</button>
+    </div>
+
+    <!-- ─── Foundit Tab ─── -->
+    <div class="tab-content hidden" id="tab-foundit">
+      <h3>Blocked Title Keywords</h3>
+      <textarea id="foundit_blacklistedKeywords" placeholder="intern,manager,data entry"></textarea>
+
+      <h3>Blocked Company Names</h3>
+      <textarea id="foundit_blacklistedCompanies" placeholder="inmobi,ltm,xyz ltd"></textarea>
+
+      <h3>Additional Filters</h3>
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="foundit_hideSaved">
+          <span class="slider"></span>
+        </label>
+        <span>Hide Saved Jobs</span>
+      </div>
+
+      <button id="saveFoundit">Save Foundit Filters</button>
     </div>
 
   </div>

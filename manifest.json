@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Job Filter (LinkedIn + Naukri + Indeed + Glassdoor)",
-  "version": "2.3",
-  "description": "Advanced job filtering for LinkedIn, Naukri.com, Indeed.com, and Glassdoor",
+  "name": "Job Filter (LinkedIn + Naukri + Indeed + Glassdoor + Foundit)",
+  "version": "2.4",
+  "description": "Advanced job filtering for LinkedIn, Naukri.com, Indeed.com, Glassdoor, and Foundit.in",
   "permissions": ["storage"],
   "action": {
     "default_popup": "popup/popup.html"
@@ -26,6 +26,11 @@
     {
       "matches": ["https://www.glassdoor.com/*", "https://www.glassdoor.co.in/*"],
       "js": ["glassdoor-content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.foundit.in/*", "https://www.foundit.com/*"],
+      "js": ["foundit-content.js"],
       "run_at": "document_idle"
     }
   ]
