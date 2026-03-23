@@ -37,18 +37,34 @@
 
       <div class="toggle-container">
         <label class="switch">
-          <input type="checkbox" id="hidePromoted">
-          <span class="slider"></span>
-        </label>
-        <span>Hide Promoted Jobs</span>
-      </div>
-
-      <div class="toggle-container">
-        <label class="switch">
           <input type="checkbox" id="hideDismissed">
           <span class="slider"></span>
         </label>
         <span>Hide Dismissed Jobs</span>
+      </div>
+
+      <!-- Promoted Jobs — radio group (replaces two separate toggles) -->
+      <h3>Promoted Jobs</h3>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="promotedMode" value="show" checked>
+          <span>Show All Promoted</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="promotedMode" value="hide">
+          <span>Hide All Promoted</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="promotedMode" value="partial">
+          <span>Partial Hide <span class="radio-hint">(hide only jobs you've already clicked)</span></span>
+        </label>
+      </div>
+
+      <!-- Seen list — only visible when "Partial Hide" is selected -->
+      <div id="seenPromotedSection" class="hidden">
+        <h3>Seen Promoted Jobs Today</h3>
+        <div id="seenPromotedList" class="seen-list"></div>
+        <button id="clearSeenPromoted" class="btn-danger">🗑️ Clear Seen List</button>
       </div>
 
       <button id="saveLinkedIn">Save LinkedIn Filters</button>
@@ -101,7 +117,6 @@
 
       <button id="saveIndeed">Save Indeed Filters</button>
     </div>
-
 
     <!-- ─── Glassdoor Tab ─── -->
     <div class="tab-content hidden" id="tab-glassdoor">

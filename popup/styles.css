@@ -54,7 +54,7 @@ body {
 /* ── Tab Content — scrollable so nothing gets clipped ── */
 .tab-content {
   display: block;
-  max-height: 360px;
+  max-height: 400px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -108,6 +108,13 @@ button {
 
 button:hover { background-color: #004fa3; }
 
+/* ── Danger button (Clear Seen List) ── */
+.btn-danger {
+  background-color: #c62828;
+  margin-top: 6px;
+}
+.btn-danger:hover { background-color: #8e0000; }
+
 /* ── Toggle Switch ── */
 .toggle-container {
   display: flex;
@@ -149,6 +156,58 @@ button:hover { background-color: #004fa3; }
 
 input:checked + .slider { background-color: #0a66c2; }
 input:checked + .slider:before { transform: translateX(16px); }
+
+/* ── Radio Group (Promoted Jobs) ── */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  background: #f7f9fb;
+  border: 1px solid #e0e8f0;
+  border-radius: 6px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  accent-color: #0a66c2;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.radio-hint {
+  color: #888;
+  font-size: 11px;
+}
+
+/* ── Seen Promoted List ── */
+.seen-list {
+  font-size: 11px;
+  color: #555;
+  max-height: 90px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  line-height: 1.7;
+  background: #fafafa;
+}
+
+.seen-item strong {
+  color: #333;
+}
 
 /* ── Save Tick Animation ── */
 .save-status {

@@ -26,6 +26,51 @@ function parseTextarea(id) {
     .filter(k => k);
 }
 
+// ── Seen Promoted List UI ─────────────────────────────────────
+
+/**
+ * Show/hide the seen-list section based on the selected radio,
+ * and render the current list entries from chrome.storage.local.
+ */
+function updateSeenPromotedUI() {
+  const mode    = document.querySelector('input[name="promotedMode"]:checked')?.value;
+  const section = document.getElementById('seenPromotedSection');
+
+  if (mode !== 'partial') {
+    section.classList.add('hidden');
+    return;
+  }
+  section.classList.remove('hidden');
+
+  const today = new Date().toISOString().slice(0, 10);
+  chrome.storage.local.get(['seen_promoted_list'], (data) => {
+    const stored = data['seen_promoted_list'];
+    const list   = (stored && stored.date === today) ? (stored.list || []) : [];
+    const listEl = document.getElementById('seenPromotedList');
+
+    if (!list.length) {
+      listEl.textContent = 'No promoted jobs seen yet today.';
+    } else {
+      listEl.innerHTML = list.map(key => {
+        const [title, company] = key.split('|');
+        return `<div class="seen-item">• <strong>${title}</strong> @ ${company || ''}</div>`;
+      }).join('');
+    }
+  });
+}
+
+// Show/hide seen section whenever the radio selection changes
+document.querySelectorAll('input[name="promotedMode"]').forEach(r => {
+  r.addEventListener('change', updateSeenPromotedUI);
+});
+
+// Clear seen list button in popup
+document.getElementById('clearSeenPromoted').addEventListener('click', () => {
+  chrome.storage.local.remove('seen_promoted_list', () => {
+    updateSeenPromotedUI();
+  });
+});
+
 // ── LinkedIn Save ─────────────────────────────────────────────
 
 document.getElementById('saveLinkedIn').addEventListener('click', () => {
@@ -33,16 +78,16 @@ document.getElementById('saveLinkedIn').addEventListener('click', () => {
   const titleKeywords     = parseTextarea('titleKeywords');
   const companyNames      = parseTextarea('companyNames');
   const hideApplied       = document.getElementById('hideApplied').checked;
-  const hidePromoted      = document.getElementById('hidePromoted').checked;
   const hideDismissed     = document.getElementById('hideDismissed').checked;
+  const promotedMode      = document.querySelector('input[name="promotedMode"]:checked')?.value || 'show';
 
   chrome.storage.sync.set({
     whitelistKeywords,
     titleKeywords,
     companyNames,
     hideApplied,
-    hidePromoted,
-    hideDismissed
+    hideDismissed,
+    promotedMode
   }, showSavedTick);
 });
 
@@ -66,14 +111,23 @@ document.getElementById('saveNaukri').addEventListener('click', () => {
 
 // LinkedIn
 chrome.storage.sync.get(
-  ['whitelistKeywords', 'titleKeywords', 'companyNames', 'hideApplied', 'hidePromoted', 'hideDismissed'],
+  ['whitelistKeywords', 'titleKeywords', 'companyNames',
+   'hideApplied', 'hidePromoted', 'hideDismissed',
+   'partialHidePromoted', 'promotedMode'],
   (data) => {
     document.getElementById('whitelistKeywords').value = data.whitelistKeywords?.join(', ') || '';
     document.getElementById('titleKeywords').value     = data.titleKeywords?.join(', ')     || '';
     document.getElementById('companyNames').value      = data.companyNames?.join(', ')      || '';
     document.getElementById('hideApplied').checked     = data.hideApplied    || false;
-    document.getElementById('hidePromoted').checked    = data.hidePromoted   || false;
     document.getElementById('hideDismissed').checked   = data.hideDismissed  || false;
+
+    // Backward compat: if user had old boolean settings, map them to the radio value
+    const mode = data.promotedMode ||
+      (data.hidePromoted ? 'hide' : (data.partialHidePromoted ? 'partial' : 'show'));
+    const radio = document.querySelector(`input[name="promotedMode"][value="${mode}"]`);
+    if (radio) radio.checked = true;
+
+    updateSeenPromotedUI(); // render seen list or hide section
   }
 );
 
@@ -102,7 +156,6 @@ document.getElementById('saveIndeed').addEventListener('click', () => {
   }, showSavedTick);
 });
 
-// Indeed load on popup open
 chrome.storage.sync.get(
   ['indeed_blacklistedKeywords', 'indeed_blacklistedCompanies', 'indeed_hideSaved'],
   (data) => {
