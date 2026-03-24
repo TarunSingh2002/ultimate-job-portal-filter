@@ -15,7 +15,7 @@ function getTodayStr() {
 function loadSeenPromotedList(callback) {
   chrome.storage.local.get(['seen_promoted_list'], (data) => {
     const stored = data['seen_promoted_list'];
-    if (stored && stored.date === getTodayStr()) {
+    if (stored) {
       seenPromotedList = stored.list || [];
     } else {
       seenPromotedList = [];
